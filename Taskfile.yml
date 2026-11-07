@@ -1,0 +1,35 @@
+version: '3'
+
+tasks:
+  build:
+    desc: "builds ows example."
+    cmds:
+      - mkdir -p bin
+      - odin build examples/ -out:bin/ows-example
+
+  run:
+    desc: "build & run ows example."
+    cmds:
+      - task: build
+      - ./bin/ows-example
+
+  test:
+    desc: "runs Odin unit test suite."
+    cmds:
+      - odin test tests/
+
+  test:integration:
+    desc: "runs Python end-to-end integration test suite."
+    cmds:
+      - task: build
+      - python3 tests/integration_test.py
+
+  check:
+    desc: "type checks ows package."
+    cmds:
+      - odin check . -no-entry-point
+
+  fmt:
+    desc: "formats Odin source files using odinfmt."
+    cmds:
+      - for f in *.odin examples/*.odin tests/*.odin; do odinfmt -w "$f"; done
