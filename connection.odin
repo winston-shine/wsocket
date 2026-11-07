@@ -1,4 +1,4 @@
-package ows
+package wsocket
 
 import "core:fmt"
 import "core:mem"

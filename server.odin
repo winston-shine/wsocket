@@ -1,8 +1,7 @@
-package ows
+package wsocket
 
 import "core:mem"
 import "core:net"
-import "core:strings"
 import "core:sync"
 import "core:thread"
 import "core:time"

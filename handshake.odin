@@ -1,4 +1,4 @@
-package ows
+package wsocket
 
 import "core:crypto/legacy/sha1"
 import "core:encoding/base64"

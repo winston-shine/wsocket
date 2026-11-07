@@ -1,6 +1,6 @@
-# ows - Odin WebSocket Server Library
+# wsocket - Odin WebSocket Server Library
 
-`ows` is a fast, lightweight, and fully RFC 6455 compliant WebSocket server library written in the [Odin programming language](https://odin-lang.org/).
+`wsocket` is a fast, lightweight, and fully RFC 6455 compliant WebSocket server library written in the [Odin programming language](https://odin-lang.org/).
 
 ## Features
 
@@ -30,13 +30,13 @@
 Clone this repository into your project or Odin collection path:
 
 ```bash
-git clone https://github.com/username/ows.git
+git clone https://github.com/username/wsocket.git
 ```
 
 Since the library files reside at the root of the project, you can import it directly by directory:
 
 ```odin
-import ws "path/to/ows" // or import ws "ows" if placed in an Odin collection
+import ws "path/to/wsocket" // or import ws "wsocket" if placed in an Odin collection
 ```
 
 ---
@@ -49,7 +49,7 @@ import ws "path/to/ows" // or import ws "ows" if placed in an Odin collection
 package main
 
 import "core:fmt"
-import ws "ows" // or relative path to ows root
+import ws "wsocket" // or relative path to wsocket root
 
 main :: proc() {
     server: ws.Server
@@ -62,7 +62,7 @@ main :: proc() {
     // Callback when client connects
     config.on_connect = proc(conn: ^ws.Connection, user_data: rawptr) {
         fmt.printf("Client #%d connected from %s\n", conn.id, ws.connection_endpoint_string(conn))
-        ws.send_text(conn, "Welcome to the ows WebSocket Server!")
+        ws.send_text(conn, "Welcome to the wsocket WebSocket Server!")
     }
 
     // Callback when message arrives
@@ -204,40 +204,3 @@ ws.server_shutdown(&server)
 - `request_query_param(req: ^Request, key: string) -> (string, bool)`
 
 ---
-
-## Build and Test
-
-Using `task` or `go-task`:
-
-```bash
-# Build the example executable (bin/ows-example)
-task build
-
-# Run example server
-task run
-
-# Run Odin unit tests
-task test
-
-# Run Python integration test suite (full RFC 6455 end-to-end tests)
-task test:integration
-
-# Format code
-task fmt
-```
-
-Or directly using `odin`:
-
-```bash
-# Build example
-odin build examples/ -out:bin/ows-example
-
-# Run unit tests
-odin test tests/
-```
-
----
-
-## License
-
-MIT

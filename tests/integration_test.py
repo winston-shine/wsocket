@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-End-to-end integration test suite for the `ows` Odin WebSocket server library.
+End-to-end integration test suite for the `wsocket` Odin WebSocket server library.
 Tests RFC 6455 compliance, text, binary, ping/pong, large frames, broadcast,
 subprotocols, error rejection, and close codes.
 """
@@ -344,7 +344,7 @@ async def test_fragmented_frames_with_interleaved_ping():
 
 async def main():
     print(f"Starting server process on port {SERVER_PORT}...")
-    server_bin = os.path.abspath("bin/ows-example")
+    server_bin = os.path.abspath("bin/wsocket-example")
     proc = subprocess.Popen([server_bin, str(SERVER_PORT)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     try:

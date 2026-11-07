@@ -53,7 +53,7 @@ main :: proc() {
         )
 
         // Send a greeting to the newly connected client
-        welcome_msg := fmt.tprintf("Welcome client #%d! Connected to ows server.", conn.id)
+        welcome_msg := fmt.tprintf("Welcome client #%d! Connected to wsocket server.", conn.id)
         ws.send_text(conn, welcome_msg)
     }
 
@@ -130,7 +130,7 @@ main :: proc() {
     }
 
     fmt.printf("==========================================\n")
-    fmt.printf("  ows WebSocket Server running on ws://%s:%d\n", config.host, config.port)
+    fmt.printf("  wsocket WebSocket Server running on ws://%s:%d\n", config.host, config.port)
     fmt.printf("  Endpoints: /, /ws, /echo, /chat\n")
     fmt.printf("  Commands:  /broadcast <msg>, /stats, /close\n")
     fmt.printf("==========================================\n")

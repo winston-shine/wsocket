@@ -1,7 +1,6 @@
-package ows
+package wsocket
 
 import "core:encoding/endian"
-import "core:mem"
 
 // Frame parsing outcome
 Frame_Parse_Result :: enum {

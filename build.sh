@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ows build script (replaces Taskfile.yml)
+# wsocket build script
 
 cmd="${1:-build}"
 
 case "$cmd" in
   build)
     mkdir -p bin
-    odin build examples/ -out:bin/ows-example
+    odin build examples/ -out:bin/wsocket-example
     ;;
   run)
     mkdir -p bin
-    odin build examples/ -out:bin/ows-example
-    ./bin/ows-example
+    odin build examples/ -out:bin/wsocket-example
+    ./bin/wsocket-example
     ;;
   test)
     odin test tests/
     ;;
   test:integration)
     mkdir -p bin
-    odin build examples/ -out:bin/ows-example
+    odin build examples/ -out:bin/wsocket-example
     python3 tests/integration_test.py
     ;;
   check)

@@ -1,7 +1,6 @@
-package ows
+package wsocket
 
 import "core:mem"
-import "core:net"
 import "core:time"
 
 // RFC 6455 WebSocket Opcodes

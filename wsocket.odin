@@ -1,7 +1,7 @@
-package ows
+package wsocket
 
 /*
-Package ows implements a full-featured, RFC 6455 compliant WebSocket server library in Odin.
+Package wsocket implements a full-featured, RFC 6455 compliant WebSocket server library in Odin.
 
 Features:
 - Complete RFC 6455 opening handshake with Sec-WebSocket-Key / Sec-WebSocket-Accept validation
