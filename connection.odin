@@ -76,13 +76,19 @@ close :: proc(
     code: Close_Code = .Normal_Closure,
     reason: string = "",
 ) -> Error {
-    if conn == nil || conn.state == .Closed {
+    if conn == nil {
         return .None
     }
 
+    sync.mutex_lock(&conn.send_mutex)
+    if conn.state == .Closed {
+        sync.mutex_unlock(&conn.send_mutex)
+        return .None
+    }
     conn.state = .Closing
     conn.close_code = code
     conn.close_reason = reason
+    sync.mutex_unlock(&conn.send_mutex)
 
     connection_send_close_frame(conn, code, reason)
 
@@ -533,6 +539,12 @@ connection_handle_frame :: proc(conn: ^Connection, hdr: Frame_Header, payload: [
             conn.state = .Closed
             return false
         }
+    }
+
+    if len(payload) > server.config.max_message_size {
+        connection_send_close_frame(conn, .Message_Too_Big, "Message too big")
+        conn.state = .Closed
+        return false
     }
 
     if server.config.on_message != nil {

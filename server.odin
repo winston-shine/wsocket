@@ -58,24 +58,9 @@ resolve_server_address :: proc(host: string) -> net.Address {
     return net.IP4_Any
 }
 
-// Starts the WebSocket server and enters the accept loop (blocking).
-// Call server_shutdown from another thread or signal handler to stop.
-server_start :: proc(server: ^Server) -> Error {
-    addr := resolve_server_address(server.config.host)
-    ep := net.Endpoint {
-        address = addr,
-        port    = server.config.port,
-    }
-
-    listener, lerr := net.listen_tcp(ep, server.config.backlog)
-    if lerr != nil {
-        return .Socket_Error
-    }
-    server.listener = listener
-    server.bound_endpoint, _ = net.bound_endpoint(listener)
-    server.running = true
-
-    // Accept loop
+// Accept loop shared by server_start and background mode.
+@(private)
+_server_accept_loop :: proc(server: ^Server) {
     for server.running {
         client_sock, client_ep, aerr := net.accept_tcp(server.listener)
         if aerr != nil {
@@ -114,7 +99,26 @@ server_start :: proc(server: ^Server) -> Error {
             self_cleanup = true,
         )
     }
+}
 
+// Starts the WebSocket server and enters the accept loop (blocking).
+// Call server_shutdown from another thread or signal handler to stop.
+server_start :: proc(server: ^Server) -> Error {
+    addr := resolve_server_address(server.config.host)
+    ep := net.Endpoint {
+        address = addr,
+        port    = server.config.port,
+    }
+
+    listener, lerr := net.listen_tcp(ep, server.config.backlog)
+    if lerr != nil {
+        return .Socket_Error
+    }
+    server.listener = listener
+    server.bound_endpoint, _ = net.bound_endpoint(listener)
+    server.running = true
+
+    _server_accept_loop(server)
     return .None
 }
 
@@ -122,7 +126,7 @@ server_start :: proc(server: ^Server) -> Error {
 @(private)
 _server_background_proc :: proc(data: rawptr) {
     server := cast(^Server)data
-    server_start(server)
+    _server_accept_loop(server)
 }
 
 // Starts the server in a separate background thread and returns immediately.
@@ -173,6 +177,12 @@ server_shutdown :: proc(server: ^Server) {
     // Send Going_Away close frames to all active clients
     for conn in active_conns {
         close(conn, .Going_Away, "Server shutting down")
+    }
+
+    // Force-close sockets to unblock any worker threads stuck in recv
+    for conn in active_conns {
+        net.shutdown(conn.socket, .Both)
+        net.close(conn.socket)
     }
 
     // Wait for all connection workers to exit cleanly (up to 5 seconds timeout)

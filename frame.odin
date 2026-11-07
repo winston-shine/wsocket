@@ -75,12 +75,20 @@ parse_frame_header :: proc(data: []byte) -> (hdr: Frame_Header, res: Frame_Parse
             return {}, .Incomplete
         }
         hdr.payload_len = u64(endian.unchecked_get_u16be(data[2:4]))
+        // RFC 6455 5.2: 126 indicator requires length >= 126
+        if hdr.payload_len < 126 {
+            return {}, .Protocol_Error
+        }
         hdr.header_size = 4
     } else {     // 127
         if len(data) < 10 {
             return {}, .Incomplete
         }
         hdr.payload_len = endian.unchecked_get_u64be(data[2:10])
+        // RFC 6455 5.2: 127 indicator requires length >= 65536
+        if hdr.payload_len < 65536 {
+            return {}, .Protocol_Error
+        }
         hdr.header_size = 10
 
         // RFC 6455 5.2: Most significant bit of 64-bit length MUST be 0
