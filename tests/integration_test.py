@@ -177,7 +177,6 @@ async def test_unmasked_client_frame_rejection():
                 break
             reply += chunk
 
-        print(f"DEBUG: unmasked test received total bytes: {len(reply)}")
         # Check if reply contains close frame (opcode 0x8)
         idx = 0
         found_close = False
